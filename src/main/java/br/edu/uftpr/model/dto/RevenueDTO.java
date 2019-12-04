@@ -1,6 +1,8 @@
 package br.edu.uftpr.model.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -10,7 +12,6 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import br.edu.uftpr.model.entity.Revenue;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Data
 @ToString
 public class RevenueDTO {
@@ -41,12 +41,25 @@ public class RevenueDTO {
 	@Pattern(regexp = "^([TF])$", message = "O Status e pagamento deve ser 'T' ou 'F' com letra maíuscula.")
 	private String receivebled;
 
+	private Date created;
+	private Date updated;
+
 	public RevenueDTO(Revenue revenue) {
 		this.id = revenue.getId();
 		this.description = revenue.getDescription();
 		this.valueReceiveble = revenue.getValueReceiveble();
 		this.dateReceiveble = revenue.getDateReceiveble();
 		this.receivebled = revenue.getReceivebled();
+		this.created = revenue.getCreated();
+		this.updated = revenue.getUpdated();
+	}
+
+	public RevenueDTO(Long id, String description, Double valueReceiveble, Date dateReceiveble, String receivebled) {
+		this.id = id;
+		this.description = description;
+		this.valueReceiveble = valueReceiveble;
+		this.dateReceiveble = dateReceiveble;
+		this.receivebled = receivebled;
 	}
 
 	public RevenueDTO() {
@@ -55,5 +68,13 @@ public class RevenueDTO {
 		this.valueReceiveble = 0D;
 		this.dateReceiveble = null;
 		this.receivebled = "F";
+	}
+
+	public List<RevenueDTO> mapAll(List<Revenue> revenues) {
+		List<RevenueDTO> revenueDTOs = new ArrayList<RevenueDTO>();
+		for (Revenue revenue : revenues) {
+			revenueDTOs.add(new RevenueDTO(revenue));
+		}
+		return revenueDTOs;
 	}
 }

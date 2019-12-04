@@ -1,18 +1,22 @@
 package br.edu.uftpr.model.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.edu.uftpr.model.dto.RevenueDTO;
-import lombok.AllArgsConstructor;
+import br.edu.uftpr.model.dto.UserDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +26,6 @@ import lombok.ToString;
 @Table(name = "revenues")
 @Getter
 @Setter
-@AllArgsConstructor
 @Data
 @ToString
 public class Revenue {
@@ -40,12 +43,28 @@ public class Revenue {
 	@Column(name = "rev_receivebled", nullable = false)
 	private String receivebled;
 
+	private Date created;
+	private Date updated;
+
 	public Revenue(RevenueDTO revenue) {
 		this.id = revenue.getId();
 		this.description = revenue.getDescription();
 		this.valueReceiveble = revenue.getValueReceiveble();
 		this.dateReceiveble = revenue.getDateReceiveble();
 		this.receivebled = revenue.getReceivebled();
+		this.created = revenue.getCreated();
+		this.updated = revenue.getUpdated();
+	}
+
+	public Revenue(Long id, String description, Double valueReceiveble, Date dateReceiveble, String receivebled,
+			Date created, Date updated) {
+		this.id = id;
+		this.description = description;
+		this.valueReceiveble = valueReceiveble;
+		this.dateReceiveble = dateReceiveble;
+		this.receivebled = receivebled;
+		this.created = created;
+		this.updated = updated;
 	}
 
 	public Revenue() {
@@ -56,4 +75,31 @@ public class Revenue {
 		this.receivebled = "F";
 	}
 
+	public List<Revenue> mapAll(List<RevenueDTO> revenueDTOs) {
+		List<Revenue> revenues = new ArrayList<Revenue>();
+		for (RevenueDTO revenueDTO : revenueDTOs) {
+			revenues.add(new Revenue(revenueDTO));
+		}
+		return revenues;
+	}
+	
+	public void update(RevenueDTO revenue) {
+		this.id = revenue.getId();
+		this.description = revenue.getDescription();
+		this.valueReceiveble = revenue.getValueReceiveble();
+		this.dateReceiveble = revenue.getDateReceiveble();
+		this.receivebled = revenue.getReceivebled();
+	}
+
+	@PreUpdate
+	public void onUpdate() {
+		this.updated = new Date();
+	}
+
+	@PrePersist
+	public void onSave() {
+		final Date now = new Date();
+		this.created = now;
+		this.updated = now;
+	}
 }

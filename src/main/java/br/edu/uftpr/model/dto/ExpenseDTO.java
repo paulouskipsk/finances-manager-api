@@ -10,7 +10,6 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import br.edu.uftpr.model.entity.Expense;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Data
 @ToString
 public class ExpenseDTO {
@@ -41,12 +39,25 @@ public class ExpenseDTO {
 	@Pattern(regexp = "^([TF])$", message = "O Status e pagamento deve ser 'T' ou 'F' com letra maíuscula.")
 	private String paid;
 
+	private Date created;
+	private Date updated;
+
 	public ExpenseDTO(Expense expense) {
 		this.id = expense.getId();
 		this.description = expense.getDescription();
 		this.valuePay = expense.getValuePay();
 		this.datePay = expense.getDatePay();
 		this.paid = expense.getPaid();
+		this.created = expense.getCreated();
+		this.updated = expense.getUpdated();
+	}
+
+	public ExpenseDTO(Long id, String description, Double valuePay, Date datePay, String paid) {
+		this.id = id;
+		this.description = description;
+		this.valuePay = valuePay;
+		this.datePay = datePay;
+		this.paid = paid;
 	}
 
 	public ExpenseDTO() {
@@ -56,4 +67,5 @@ public class ExpenseDTO {
 		this.datePay = null;
 		this.paid = "F";
 	}
+
 }
