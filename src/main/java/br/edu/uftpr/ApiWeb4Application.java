@@ -11,6 +11,7 @@ import br.edu.uftpr.model.entity.User;
 import br.edu.uftpr.model.repository.UserRepository;
 
 @SpringBootApplication
+//@ComponentScan({"br.edu.utfpr"})
 public class ApiWeb4Application implements CommandLineRunner  {
 	
 	@Autowired
@@ -19,6 +20,7 @@ public class ApiWeb4Application implements CommandLineRunner  {
 	public static void main(String[] args) {
 		SpringApplication.run(ApiWeb4Application.class, args);
 	}
+	
 
 	@Override
 	public void run(String... args) throws Exception {
