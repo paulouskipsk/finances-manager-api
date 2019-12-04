@@ -1,4 +1,4 @@
-## Finances Manager v 1.0
+# Finances Manager v 1.0
 
 ## Boas Práticas
 
@@ -19,7 +19,7 @@
 - [ ] Tratamento de genérico (centralizado) de exceptions.<br/>
 - [ ] Tratamento de exceptions originados no Banco de Dados.<br/>
 
-FERRAMENTAS
+## Ferramentas
 - [x] Gerar documentação da API com Swagger.<br/>
 - [x] Usar lombok em DTOs e Entidades.<br/>
 - [ ] Realizar integração contínua com Travis CI.<br/>
