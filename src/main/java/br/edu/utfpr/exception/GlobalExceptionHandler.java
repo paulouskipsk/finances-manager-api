@@ -21,83 +21,104 @@ import br.edu.uftpr.util.Response;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final static Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	private final static Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleException(EntityNotFoundException exception, HttpServletRequest request) {
-        System.err.print("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<?> ConstraintViolationException(ConstraintViolationException exception,
+			HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
 
-        Response response = new Response();
-        response.addError("O dado solicitado não foi encontrado.");
+		Response response = new Response();
+		response.addError("Ocorreu um erro de restrições no banco de dados.");
 
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
+		return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 
-    @ExceptionHandler(EntityExistsException.class)
-    public ResponseEntity<?> handleException(EntityExistsException exception, HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
+	
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> DataIntegrityViolationException(DataIntegrityViolationException exception,
+			HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
 
-        Response response = new Response();
-        response.addError(exception.getMessage());
+		Response response = new Response();
+		response.addError("Oppss!!! Ocorreu um erro de restrições no banco de dados.");
 
-        return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+		return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleException(DataIntegrityViolationException exception,
-                                             HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError(exception.getMessage());
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<?> handleException(EntityNotFoundException exception, HttpServletRequest request) {
+		System.err.print("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
 
-        return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+		Response response = new Response();
+		response.addError("O dado solicitado não foi encontrado.");
 
-    @ExceptionHandler(InvalidParamsException.class)
-    public ResponseEntity<?> handleException(InvalidParamsException exception, HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError(exception.getMessage());
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
 
-        // return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        return ResponseEntity.badRequest().body(response);
-    }
+	@ExceptionHandler(EntityExistsException.class)
+	public ResponseEntity<?> handleException(EntityExistsException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<?> handleException(EmptyResultDataAccessException exception,
-                                             HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError(exception.getMessage());
+		Response response = new Response();
+		response.addError(exception.getMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.GONE);
-    }
+		return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleException(ConstraintViolationException exception,
-                                             HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError(exception.getMessage());
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<?> handleException(DataIntegrityViolationException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
+		Response response = new Response();
+		response.addError(exception.getMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+		return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
+	}
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(value= HttpStatus.NOT_FOUND)
-    public ResponseEntity<?> handleException(NoHandlerFoundException exception,
-                                             HttpServletRequest request) {
-        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError("Página não encontrada");
+	@ExceptionHandler(InvalidParamsException.class)
+	public ResponseEntity<?> handleException(InvalidParamsException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
+		Response response = new Response();
+		response.addError(exception.getMessage());
 
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(EmptyResultDataAccessException.class)
+	public ResponseEntity<?> handleException(EmptyResultDataAccessException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
+		Response response = new Response();
+		response.addError(exception.getMessage());
+
+		return new ResponseEntity<>(response, HttpStatus.GONE);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<?> handleException(ConstraintViolationException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
+		Response response = new Response();
+		response.addError(exception.getMessage());
+
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(NoHandlerFoundException.class)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	public ResponseEntity<?> handleException(NoHandlerFoundException exception, HttpServletRequest request) {
+		log.error("Error in process request: " + request.getRequestURL() + " cause by: "
+				+ exception.getClass().getSimpleName());
+		Response response = new Response();
+		response.addError("Página não encontrada");
+
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+	}
 }

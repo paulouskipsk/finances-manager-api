@@ -53,16 +53,13 @@ public class Expense {
 		this.paid = expense.getPaid();
 	}
 	
-	public Expense(Long id, String description, Double valuePay, Date datePay, String paid, Date created,
-			Date updated) {
+	public Expense(Long id, String description, Double valuePay, Date datePay, String paid) {
 		super();
 		this.id = id;
 		this.description = description;
 		this.valuePay = valuePay;
 		this.datePay = datePay;
 		this.paid = paid;
-		this.created = created;
-		this.updated = updated;
 	}
 
 	public Expense() {
@@ -82,6 +79,14 @@ public class Expense {
 	}
 	
 	public void Expense(ExpenseDTO expense) {
+		this.id = expense.getId();
+		this.description = expense.getDescription();
+		this.valuePay = expense.getValuePay();
+		this.datePay = expense.getDatePay();
+		this.paid = expense.getPaid();
+	}
+	
+	public void update(ExpenseDTO expense) {
 		this.id = expense.getId();
 		this.description = expense.getDescription();
 		this.valuePay = expense.getValuePay();

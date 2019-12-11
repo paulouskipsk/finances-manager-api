@@ -1,15 +1,19 @@
 package br.edu.uftpr.model.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import br.edu.uftpr.model.entity.Expense;
+import br.edu.uftpr.model.entity.Revenue;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,15 +27,14 @@ public class ExpenseDTO {
 	private Long id;
 
 	@NotEmpty(message = "A descrição não pode ser vazia")
-	@Pattern(regexp = "^(\\s?[A-ZÀ-Ú][a-zà-ú][0-9]*)+(\\s[a-zà-ú][0-9]*)+", message = "Insira a descrição iniciando com letra maíuscula.")
+	@Pattern(regexp = "^(\\s?[A-ZÀ-Ú][a-zà-ú]*)?(\\s[A-ZÀ-Úa-zà-ú0-9.,]*)+", message = "Insira a descrição iniciando com letra maíuscula.")
 	@Length(min = 3, max = 100, message = "A descrição dever ter no mínimo 3 e máximo 100 caracteres.")
 	private String description;
 
-	@NotEmpty(message = "O Valor a pagar deve ser informado")
-	@Min(value = (long) 0.1, message = "Valor a pagar deve ser informado")
+	@Min(value = (long) 0.1, message = "Valor a pagar deve ser informado e maior que zero")
 	private Double valuePay;
 
-	@NotEmpty(message = "A Data não pode ser vazia")
+	@NotNull(message = "A Data não pode ser vazia")
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date datePay;
 
@@ -66,6 +69,14 @@ public class ExpenseDTO {
 		this.valuePay = 0D;
 		this.datePay = null;
 		this.paid = "F";
+	}
+	
+	public List<ExpenseDTO> mapAll(List<Expense> expenses) {
+		List<ExpenseDTO> expenseDTOs = new ArrayList<ExpenseDTO>();
+		for (Expense expense : expenses) {
+			expenseDTOs.add(new ExpenseDTO(expense));
+		}
+		return expenseDTOs;
 	}
 
 }

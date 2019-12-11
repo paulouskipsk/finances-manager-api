@@ -16,7 +16,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.edu.uftpr.model.dto.RevenueDTO;
-import br.edu.uftpr.model.dto.UserDTO;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,15 +55,12 @@ public class Revenue {
 		this.updated = revenue.getUpdated();
 	}
 
-	public Revenue(Long id, String description, Double valueReceiveble, Date dateReceiveble, String receivebled,
-			Date created, Date updated) {
+	public Revenue(Long id, String description, Double valueReceiveble, Date dateReceiveble, String receivebled) {
 		this.id = id;
 		this.description = description;
 		this.valueReceiveble = valueReceiveble;
 		this.dateReceiveble = dateReceiveble;
 		this.receivebled = receivebled;
-		this.created = created;
-		this.updated = updated;
 	}
 
 	public Revenue() {

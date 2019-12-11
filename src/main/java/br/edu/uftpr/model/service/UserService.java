@@ -34,15 +34,15 @@ public class UserService {
 		return users;
 	}
 
-	public User save(User user) throws DataIntegrityViolationException {
+	public User save(User user){
 		return userRepository.save(user);
 	}
 
-	public List<User> saveAll(List<User> users) throws DataIntegrityViolationException {
+	public List<User> saveAll(List<User> users) {
 		return userRepository.saveAll(users);
 	}
 
-	public void delete(Long id) throws DataIntegrityViolationException {
+	public void delete(Long id) {
 		userRepository.deleteById(id);
 	}
 

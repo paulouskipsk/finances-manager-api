@@ -11,12 +11,12 @@
 - [x] Nomes de rotas com substantivos em inglês ou português.<br/>
 - [x] Passar o id como parâmetro em operações de editar e remover.<br/>
 - [x] Evitar atualização de dados com requisições POST.<br/>
-- [ ] Evitar que um usuário possa atualizar ou remover dados de outro usuário.<br/>
+- [-] Evitar que um usuário possa atualizar ou remover dados de outro usuário.<br/>
 - [x] Validação de DTOs com Bean Validation<br/>
 - [x] Buscas normais e com paginação.<br/>
-- [ ] Testes unitários em repositórios.<br/>
+- [x] Testes unitários em repositórios.<br/>
 - [x] Auditoria de classes de domínio.<br/>
-- [ ] Tratamento de genérico (centralizado) de exceptions.<br/>
+- [x] Tratamento genérico (centralizado) de exceptions.<br/>
 - [ ] Tratamento de exceptions originados no Banco de Dados.<br/>
 
 ## Ferramentas

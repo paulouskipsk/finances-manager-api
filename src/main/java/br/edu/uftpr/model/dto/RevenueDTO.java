@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
@@ -25,16 +26,15 @@ public class RevenueDTO {
 	private Long id;
 
 	@NotEmpty(message = "A descrição não pode ser vazia")
-	@Pattern(regexp = "^(\\s?[A-ZÀ-Ú][a-zà-ú][0-9]*)+(\\s[a-zà-ú][0-9]*)+", message = "Insira a descrição iniciando com letra maíuscula.")
+	@Pattern(regexp = "^(\\s?[A-ZÀ-Ú][a-zà-ú]*)?(\\s[A-ZÀ-Úa-zà-ú0-9.,]*)+", message = "Insira a descrição iniciando com letra maíuscula.")
 	@Length(min = 3, max = 100, message = "A descrição dever ter no mínimo 3 e máximo 100 caracteres.")
 	private String description;
 
-	@NotEmpty(message = "O Valor a receber deve ser informado")
-	@Min(value = (long) 0.1, message = "Valor deve ser informado")
+	@Min(value=(long) 0.1, message = "O Valor a receber deve ser informado e maior que zero")
 	private Double valueReceiveble;
 
-	@NotEmpty(message = "A Data não pode ser vazia")
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@NotNull(message = "A Data não pode ser vazia")
+	@DateTimeFormat (pattern = "dd/MM/yyyy")
 	private Date dateReceiveble;
 
 	@NotEmpty(message = "O Status e pagamento não pode ser vazio")

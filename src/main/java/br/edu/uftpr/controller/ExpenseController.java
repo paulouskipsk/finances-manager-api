@@ -3,21 +3,17 @@ package br.edu.uftpr.controller;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,79 +22,79 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.uftpr.model.dto.RevenueDTO;
-import br.edu.uftpr.model.entity.Revenue;
-import br.edu.uftpr.model.service.RevenueService;
+import br.edu.uftpr.model.dto.ExpenseDTO;
+import br.edu.uftpr.model.entity.Expense;
+import br.edu.uftpr.model.service.ExpenseService;
 import br.edu.uftpr.util.Response;
 
 @RestController
-@RequestMapping(value = "/api/revenues")
+@RequestMapping(value = "/api/expenses")
 @CrossOrigin(origins = "*")
-public class RevenueController {
+public class ExpenseController {
 
 	@Autowired
-	RevenueService revenueService;
+	ExpenseService expenseService;
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Response<RevenueDTO>> findById(@PathVariable Long id) {
-		Response<RevenueDTO> response = new Response<>();
-		Optional<Revenue> revenue = revenueService.findById(id);
+	public ResponseEntity<Response<ExpenseDTO>> findById(@PathVariable Long id) {
+		Response<ExpenseDTO> response = new Response<>();
+		Optional<Expense> expense = expenseService.findById(id);
 
-		if (!revenue.isPresent()) {
-			response.addError("Receita não encontrada com este código: "+ id);
+		if (!expense.isPresent()) {
+			response.addError("Despesa não encontrada com este código: " + id);
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		response.setData(new RevenueDTO(revenue.get()));
+		response.setData(new ExpenseDTO(expense.get()));
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping(value = "/by-description/{description}")
-	public ResponseEntity<Response<List<RevenueDTO>>> findByDescriptionWith(@PathVariable String description) {
-		Response<List<RevenueDTO>> response = new Response<>();
-		List<Revenue> revenues = revenueService.findByDescriptionWith(description);
+	public ResponseEntity<Response<List<ExpenseDTO>>> findByDescriptionWith(@PathVariable String description) {
+		Response<List<ExpenseDTO>> response = new Response<>();
+		List<Expense> expenses = expenseService.findByDescriptionWith(description);
 
-		if (revenues.isEmpty()) {
-			response.addError("Nenhuma Receita encontrada");
+		if (expenses.isEmpty()) {
+			response.addError("Nenhuma Despesa encontrada");
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		List<RevenueDTO> revenueDTOs = new RevenueDTO().mapAll(revenues);
-		response.setData(revenueDTOs);
+		List<ExpenseDTO> expenseDTOs = new ExpenseDTO().mapAll(expenses);
+		response.setData(expenseDTOs);
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping
-	public ResponseEntity<Response<List<RevenueDTO>>> findAll() {
-		Response<List<RevenueDTO>> response = new Response<>();
-		List<Revenue> revenues = revenueService.findAll();
+	public ResponseEntity<Response<List<ExpenseDTO>>> findAll() {
+		Response<List<ExpenseDTO>> response = new Response<>();
+		List<Expense> expenses = expenseService.findAll();
 
-		if (revenues.isEmpty()) {
+		if (expenses.isEmpty()) {
 			response.addError("Nenhum usuário não encontrado");
 			return ResponseEntity.badRequest().body(response);
 		}
-		List<RevenueDTO> revenueDTOs = new RevenueDTO().mapAll(revenues);
-		response.setData(revenueDTOs);
+		List<ExpenseDTO> expenseDTOs = new ExpenseDTO().mapAll(expenses);
+		response.setData(expenseDTOs);
 
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping(value = "/with-pagination")
-	public ResponseEntity<Response<Page<RevenueDTO>>> findAllPagination(
+	public ResponseEntity<Response<Page<ExpenseDTO>>> findAllPagination(
 			@PageableDefault(page = 0, size = 3, direction = Direction.ASC) Pageable pageable) {
 
-		Response<Page<RevenueDTO>> response = new Response<>();
-		Page<Revenue> revenues = revenueService.findAllPagination(pageable);
+		Response<Page<ExpenseDTO>> response = new Response<>();
+		Page<Expense> expenses = expenseService.findAllPagination(pageable);
 
-		Page<RevenueDTO> revenueDTOs = revenues.map(revenue -> new RevenueDTO(revenue));
-		response.setData(revenueDTOs);
+		Page<ExpenseDTO> expenseDTOs = expenses.map(expense -> new ExpenseDTO(expense));
+		response.setData(expenseDTOs);
 
 		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping
-	public ResponseEntity<Response<RevenueDTO>> insert(@Valid @RequestBody RevenueDTO dto, BindingResult result) {
-		Response<RevenueDTO> response = new Response<>();
+	public ResponseEntity<Response<ExpenseDTO>> insert(@Valid @RequestBody ExpenseDTO dto, BindingResult result) {
+		Response<ExpenseDTO> response = new Response<>();
 
 		if (result.hasErrors()) {
 			response.setErrors(result);
@@ -106,40 +102,40 @@ public class RevenueController {
 		}
 
 		if (dto.getId() != null) {
-			Optional<Revenue> r = revenueService.findById(dto.getId());
+			Optional<Expense> r = expenseService.findById(dto.getId());
 			if (r.isPresent()) {
-				response.addError("Receita já cadastrada com este código");
+				response.addError("Despesa já cadastrada com este código");
 				return ResponseEntity.badRequest().body(response);
 			}
 		}
 
-		Revenue revenue = new Revenue(dto);
-		revenue = revenueService.save(revenue);
-		dto = new RevenueDTO(revenue);
+		Expense expense = new Expense(dto);
+		expense = expenseService.save(expense);
+		dto = new ExpenseDTO(expense);
 		response.setData(dto);
 		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<Response<RevenueDTO>> update(@PathVariable Long id, @Valid @RequestBody RevenueDTO dto,
+	public ResponseEntity<Response<ExpenseDTO>> update(@PathVariable Long id, @Valid @RequestBody ExpenseDTO dto,
 			BindingResult result) {
 
-		Response<RevenueDTO> response = new Response<>();
+		Response<ExpenseDTO> response = new Response<>();
 		if (result.hasErrors()) {
 			response.setErrors(result);
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		Optional<Revenue> u = revenueService.findById(id);
+		Optional<Expense> u = expenseService.findById(id);
 		if (!u.isPresent()) {
-			response.addError("Receita não encontrada com este Código");
+			response.addError("Despesa não encontrada com este Código");
 			return ResponseEntity.badRequest().body(response);
 		}
-		Revenue revenue = u.get();
+		Expense expense = u.get();
 
-		revenue.update(dto);
-		revenue = revenueService.save(revenue);
-		dto = new RevenueDTO(revenue);
+		expense.update(dto);
+		expense = expenseService.save(expense);
+		dto = new ExpenseDTO(expense);
 		response.setData(dto);
 
 		return ResponseEntity.ok(response);
@@ -149,14 +145,14 @@ public class RevenueController {
 	public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
 
 		Response<String> response = new Response<>();
-		Optional<Revenue> u = revenueService.findById(id);
+		Optional<Expense> u = expenseService.findById(id);
 
 		if (!u.isPresent()) {
 			response.addError("Erro ao remover, registro não encontrado para o id " + id);
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		this.revenueService.delete(id);
+		this.expenseService.delete(id);
 		return ResponseEntity.ok(response);
 	}
 }
