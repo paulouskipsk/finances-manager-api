@@ -17,7 +17,7 @@
 - [x] Testes unitários em repositórios.<br/>
 - [x] Auditoria de classes de domínio.<br/>
 - [x] Tratamento genérico (centralizado) de exceptions.<br/>
-- [ ] Tratamento de exceptions originados no Banco de Dados.<br/>
+- [x] Tratamento de exceptions originados no Banco de Dados.<br/>
 
 ## Ferramentas
 - [x] Gerar documentação da API com Swagger.<br/>

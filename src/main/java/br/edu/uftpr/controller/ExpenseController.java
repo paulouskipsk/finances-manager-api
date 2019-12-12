@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.uftpr.exception.ResourceAlreadyExistsException;
+import br.edu.uftpr.exception.ResourceNotFoundException;
 import br.edu.uftpr.model.dto.ExpenseDTO;
 import br.edu.uftpr.model.entity.Expense;
 import br.edu.uftpr.model.service.ExpenseService;
@@ -38,14 +40,9 @@ public class ExpenseController {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Response<ExpenseDTO>> findById(@PathVariable Long id) {
 		Response<ExpenseDTO> response = new Response<>();
-		Optional<Expense> expense = expenseService.findById(id);
-
-		if (!expense.isPresent()) {
-			response.addError("Despesa não encontrada com este código: " + id);
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		response.setData(new ExpenseDTO(expense.get()));
+		
+		Expense expense = verifyIfExpenseExists(id);
+		response.setData(new ExpenseDTO(expense));
 		return ResponseEntity.ok(response);
 	}
 
@@ -55,8 +52,7 @@ public class ExpenseController {
 		List<Expense> expenses = expenseService.findByDescriptionWith(description);
 
 		if (expenses.isEmpty()) {
-			response.addError("Nenhuma Despesa encontrada");
-			return ResponseEntity.badRequest().body(response);
+			throw new ResourceNotFoundException("Despesa não encontrada com esta descrição: "+description);
 		}
 
 		List<ExpenseDTO> expenseDTOs = new ExpenseDTO().mapAll(expenses);
@@ -70,8 +66,7 @@ public class ExpenseController {
 		List<Expense> expenses = expenseService.findAll();
 
 		if (expenses.isEmpty()) {
-			response.addError("Nenhum usuário não encontrado");
-			return ResponseEntity.badRequest().body(response);
+			throw new ResourceNotFoundException("Nenhuma Despesa encontrada na base de dados");
 		}
 		List<ExpenseDTO> expenseDTOs = new ExpenseDTO().mapAll(expenses);
 		response.setData(expenseDTOs);
@@ -104,8 +99,7 @@ public class ExpenseController {
 		if (dto.getId() != null) {
 			Optional<Expense> r = expenseService.findById(dto.getId());
 			if (r.isPresent()) {
-				response.addError("Despesa já cadastrada com este código");
-				return ResponseEntity.badRequest().body(response);
+				throw new ResourceAlreadyExistsException("Despesa já cadastrada com este ID: "+ dto.getId());
 			}
 		}
 
@@ -126,13 +120,7 @@ public class ExpenseController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		Optional<Expense> u = expenseService.findById(id);
-		if (!u.isPresent()) {
-			response.addError("Despesa não encontrada com este Código");
-			return ResponseEntity.badRequest().body(response);
-		}
-		Expense expense = u.get();
-
+		Expense expense = verifyIfExpenseExists(id);
 		expense.update(dto);
 		expense = expenseService.save(expense);
 		dto = new ExpenseDTO(expense);
@@ -143,16 +131,19 @@ public class ExpenseController {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
-
 		Response<String> response = new Response<>();
-		Optional<Expense> u = expenseService.findById(id);
-
-		if (!u.isPresent()) {
-			response.addError("Erro ao remover, registro não encontrado para o id " + id);
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		this.expenseService.delete(id);
+		
+		Expense expense = verifyIfExpenseExists(id);
+		this.expenseService.delete(expense.getId());
 		return ResponseEntity.ok(response);
+	}
+	
+	private Expense verifyIfExpenseExists(Long id) {
+		Optional<Expense> expense = expenseService.findById(id);
+		if (!expense.isPresent()) {
+			throw new ResourceNotFoundException("Despesa não encontrada para o ID: " + id);
+		} else {
+			return expense.get();
+		}
 	}
 }

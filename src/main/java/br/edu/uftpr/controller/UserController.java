@@ -3,21 +3,17 @@ package br.edu.uftpr.controller;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.uftpr.exception.ResourceAlreadyExistsException;
+import br.edu.uftpr.exception.ResourceNotFoundException;
 import br.edu.uftpr.model.dto.UserDTO;
 import br.edu.uftpr.model.entity.User;
 import br.edu.uftpr.model.service.UserService;
 import br.edu.uftpr.util.Response;
-import br.edu.utfpr.exception.ResourceAlreadyExistsException;
-import br.edu.utfpr.exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -106,11 +102,12 @@ public class UserController {
 				throw new ResourceAlreadyExistsException("Usuário já cadastrado com o ID: "+ dto.getId());
 			}
 		}
-/*
+
+		// Se não tratado dispara exception de integridade no banco de dados
 		if (userService.findByUsername(dto.getUsername()).isPresent()) {
-			throw new ResourceAlreadyExistsException("Usuário já cadastrado com esta identificação");
+			throw new ResourceAlreadyExistsException("Registro já cadastrado com Usuário: "+dto.getUsername());
 		}
-*/
+
 		User user = new User(dto);
 		user = userService.save(user);
 		dto = new UserDTO(user);
@@ -159,16 +156,4 @@ public class UserController {
 			return user.get();
 		}
 	}
-	/*
-	@ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleException(DataIntegrityViolationException exception,
-                                             HttpServletRequest request) {
-//        log.error("Error in process request: " + request.getRequestURL() + " cause by: "
-//                + exception.getClass().getSimpleName());
-        Response response = new Response();
-        response.addError("Oppss!!! Ocorreu um erro de restrições no banco de dados.");
-
-        return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-    */
 }

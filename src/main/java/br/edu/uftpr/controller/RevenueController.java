@@ -3,21 +3,17 @@ package br.edu.uftpr.controller;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.uftpr.exception.ResourceAlreadyExistsException;
+import br.edu.uftpr.exception.ResourceNotFoundException;
 import br.edu.uftpr.model.dto.RevenueDTO;
 import br.edu.uftpr.model.entity.Revenue;
 import br.edu.uftpr.model.service.RevenueService;
@@ -42,14 +40,9 @@ public class RevenueController {
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Response<RevenueDTO>> findById(@PathVariable Long id) {
 		Response<RevenueDTO> response = new Response<>();
-		Optional<Revenue> revenue = revenueService.findById(id);
 
-		if (!revenue.isPresent()) {
-			response.addError("Receita não encontrada com este código: "+ id);
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		response.setData(new RevenueDTO(revenue.get()));
+		Revenue revenue = verifyIfRevenueExists(id);
+		response.setData(new RevenueDTO(revenue));
 		return ResponseEntity.ok(response);
 	}
 
@@ -74,9 +67,9 @@ public class RevenueController {
 		List<Revenue> revenues = revenueService.findAll();
 
 		if (revenues.isEmpty()) {
-			response.addError("Nenhum usuário não encontrado");
-			return ResponseEntity.badRequest().body(response);
+			throw new ResourceNotFoundException("Nenhuma receita encontrada na base de dados");
 		}
+
 		List<RevenueDTO> revenueDTOs = new RevenueDTO().mapAll(revenues);
 		response.setData(revenueDTOs);
 
@@ -89,7 +82,6 @@ public class RevenueController {
 
 		Response<Page<RevenueDTO>> response = new Response<>();
 		Page<Revenue> revenues = revenueService.findAllPagination(pageable);
-
 		Page<RevenueDTO> revenueDTOs = revenues.map(revenue -> new RevenueDTO(revenue));
 		response.setData(revenueDTOs);
 
@@ -106,10 +98,9 @@ public class RevenueController {
 		}
 
 		if (dto.getId() != null) {
-			Optional<Revenue> r = revenueService.findById(dto.getId());
-			if (r.isPresent()) {
-				response.addError("Receita já cadastrada com este código");
-				return ResponseEntity.badRequest().body(response);
+			Optional<Revenue> revenue = revenueService.findById(dto.getId());
+			if (revenue.isPresent()) {
+				throw new ResourceAlreadyExistsException("Receita já cadastrada com este ID: " + revenue.get().getId());
 			}
 		}
 
@@ -130,13 +121,7 @@ public class RevenueController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		Optional<Revenue> u = revenueService.findById(id);
-		if (!u.isPresent()) {
-			response.addError("Receita não encontrada com este Código");
-			return ResponseEntity.badRequest().body(response);
-		}
-		Revenue revenue = u.get();
-
+		Revenue revenue = verifyIfRevenueExists(id);
 		revenue.update(dto);
 		revenue = revenueService.save(revenue);
 		dto = new RevenueDTO(revenue);
@@ -147,16 +132,19 @@ public class RevenueController {
 
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Response<String>> delete(@PathVariable Long id) {
-
 		Response<String> response = new Response<>();
-		Optional<Revenue> u = revenueService.findById(id);
+		Revenue revenue = verifyIfRevenueExists(id);
+		this.revenueService.delete(revenue.getId());
 
-		if (!u.isPresent()) {
-			response.addError("Erro ao remover, registro não encontrado para o id " + id);
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		this.revenueService.delete(id);
 		return ResponseEntity.ok(response);
+	}
+
+	private Revenue verifyIfRevenueExists(Long id) {
+		Optional<Revenue> revenue = revenueService.findById(id);
+		if (!revenue.isPresent()) {
+			throw new ResourceNotFoundException("Receita não encontrada para o ID: " + id);
+		} else {
+			return revenue.get();
+		}
 	}
 }
