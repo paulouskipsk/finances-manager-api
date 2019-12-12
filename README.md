@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/paulouskipsk/gestor-financeiro-web4.svg?branch=master)](https://travis-ci.org/paulouskipsk/gestor-financeiro-web4)
+
 # Finances Manager v 1.0
 
 ## Boas Práticas
