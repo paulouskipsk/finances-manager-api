@@ -73,6 +73,16 @@ public class ServiceUserTest {
 		Assertions.assertThat(usr.get().getName()).isEqualTo("Shirley");
 		Assertions.assertThat(usr.get().getPassword()).isEqualTo("abc123");
 	}
+	
+	@Test
+	//TEST 3
+	public void deleteUserTest() {
+		User user = new User(200L, "joao", "abcd", "abc123");
+		userService.save(user);
+		Optional<User> usr = userService.findById(200L);
+
+		Assertions.assertThat(usr).isEmpty();
+	}
 
 
 }
